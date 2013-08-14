@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+args       = ARGV.dup
+subcommand = args.first
+
+if subcommand.nil?
+  system('cue-list')
+elsif subcommand == 'rm'
+  args.shift
+  system('cue-delete', *args)
+elsif ['add', 'clear', 'delete', 'list', 'show', 'toggle'].include?(subcommand)
+  args.shift
+  system("cue-#{subcommand}", *args)
+else
+  abort "cue: #{subcommand} is not a cue command."
+end

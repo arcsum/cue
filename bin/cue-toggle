@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+$:.unshift File.join(__dir__, '..', 'lib')
+require 'cue/command/toggle'
+Cue::Command::Toggle.new(ARGV).execute
