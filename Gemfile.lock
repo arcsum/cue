@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    cue (0.1.0)
+      redis (~> 3.0.4)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    redis (3.0.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  cue!

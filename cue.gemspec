@@ -16,4 +16,6 @@ Gem::Specification.new do |gem|
   Dir['bin/*'].each do |executable|
     gem.executables << File.basename(executable)
   end
+  
+  gem.add_dependency 'redis', '~> 3.0.4'
 end
