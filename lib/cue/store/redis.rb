@@ -3,7 +3,15 @@ require 'time'
 
 module Cue
   module Store
-    class Redis      
+    class Redis
+      class << self
+        attr_writer :namespace
+        
+        def namespace
+          @namespace ||= 'cue'
+        end
+      end
+      
       def clear
         item_keys = redis.lrange(redis_key('keys'), 0, -1)
         keys_key  = redis_key('keys')
@@ -48,7 +56,7 @@ module Cue
       
       def deserialize(item_hash)
         content    = item_hash['content']
-        created_at = Time.parse(item_hash['created_at'])
+        created_at = Time.parse(item_hash['created_at']) if item_hash['created_at']
         state      = item_hash['state'].to_sym
         
         Cue::Item.new(content, created_at: created_at, state: state)
@@ -59,7 +67,7 @@ module Cue
       end
       
       def namespace
-        'cue'
+        self.class.namespace
       end
       
       def redis
@@ -75,10 +83,11 @@ module Cue
       
       def serialize(item)
         {
-          'created_at' => item.created_at.to_s,
           'state'      => item.state.to_s,
           'content'    => item.content
-        }
+        }.tap do |hash|
+          hash['created_at'] = item.created_at.to_s if item.created_at
+        end
       end
     end
   end
