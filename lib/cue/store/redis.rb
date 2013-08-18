@@ -1,3 +1,4 @@
+require 'cue/item'
 require 'redis'
 require 'time'
 
@@ -21,7 +22,7 @@ module Cue
       end
       
       def clear
-        item_keys = redis.lrange(redis_key('keys'), 0, -1)
+        item_keys = redis.smembers(redis_key('keys'))
         keys_key  = redis_key('keys')
         
         redis.del(item_keys, keys_key)
@@ -31,11 +32,11 @@ module Cue
         item_key = item_key(key)
         
         redis.del(item_key)
-        redis.lrem(redis_key('keys'), 0, item_key)
+        redis.srem(redis_key('keys'), item_key)
       end
       
       def keys
-        redis.lrange(redis_key('keys'), 0, -1).map do |redis_key|
+        redis.smembers(redis_key('keys')).map do |redis_key|
           redis_key.split(':').last
         end
       end
@@ -59,7 +60,7 @@ module Cue
       end
       
       def add_key(key)
-        redis.rpush(redis_key('keys'), item_key(key))
+        redis.sadd(redis_key('keys'), item_key(key))
       end
       
       def deserialize(item_hash)

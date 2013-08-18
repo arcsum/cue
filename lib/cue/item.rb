@@ -58,6 +58,7 @@ module Cue
     def save(store)
       self.created_at = Time.now unless in_store?(store)
       store.write(hash, self)
+      true
     end
     
     def to_s
