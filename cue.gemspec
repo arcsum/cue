@@ -18,4 +18,6 @@ Gem::Specification.new do |gem|
   end
   
   gem.add_dependency 'redis', '~> 3.0.4'
+  
+  gem.add_development_dependency 'rake'
 end

@@ -4,13 +4,13 @@ require 'cue/store/redis'
 
 describe Cue::Store::File do
   let(:subject) do
-    Cue::Store::Redis.namespace = 'minitest'
+    Cue::Store::Redis.namespace = 'minitest:cue'
     Cue::Store::Redis.new
   end
   
   let(:item) { Cue::Item.new('foobar', state: :incomplete) }
   
-  after  { subject.clear }
+  after { subject.clear }
   
   it 'should read and write correctly' do
     subject.write(item.hash, item)

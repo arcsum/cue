@@ -5,10 +5,18 @@ module Cue
   module Store
     class Redis
       class << self
-        attr_writer :namespace
+        attr_writer :namespace, :redis
+        
+        def configure(&block)
+          self.tap { |klass| yield(klass) }
+        end
         
         def namespace
           @namespace ||= 'cue'
+        end
+        
+        def redis
+          @redis ||= ::Redis.new
         end
       end
       
@@ -71,7 +79,7 @@ module Cue
       end
       
       def redis
-        @redis ||= ::Redis.new
+        self.class.redis
       end
       
       def redis_key(*components)
