@@ -4,6 +4,7 @@ require 'rake/testtask'
 $:.unshift('lib')
 require 'cue/item'
 require 'cue/store/file'
+require 'redis'
 
 task default: :test
 
@@ -14,7 +15,18 @@ end
 
 Rake::TestTask.new do |task|
   task.libs << 'spec'
-  task.test_files = FileList['spec/**/*_spec.rb']
+  
+  test_files = FileList['spec/**/*_spec.rb']
+  # Skip redis tests if a redis server isn't running.
+  begin
+    Redis.new.ping
+  rescue Redis::CannotConnectError
+    msg = 'Redis server not found. Skipping spec/cue/store/redis_spec.rb ...'
+    $stderr.puts(msg)
+    test_files.delete('spec/cue/store/redis_spec.rb')
+  end
+  
+  task.test_files = test_files
 end
 
 desc 'Seed with fake data.'
