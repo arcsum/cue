@@ -5,6 +5,8 @@ require 'time'
 module Cue
   module Store
     class Redis
+      include Enumerable
+      
       class << self
         attr_writer :namespace, :redis
         
@@ -33,6 +35,11 @@ module Cue
         
         redis.del(item_key)
         redis.srem(redis_key('keys'), item_key)
+      end
+      
+      def each
+        items = keys.map(&method(:read)).sort
+        yield(items)
       end
       
       def keys

@@ -5,6 +5,8 @@ require 'zlib'
 module Cue
   module Store
     class File
+      include Enumerable
+      
       def initialize(root_path=nil)
         @root_path = root_path
         FileUtils.mkdir_p(items_path)
@@ -18,6 +20,11 @@ module Cue
         FileUtils.rm_r(item_path(key))
         key_dir = dir_for(key)
         FileUtils.rm_r(key_dir) if Dir[::File.join(key_dir, '*')].empty?
+      end
+      
+      def each
+        items = keys.map(&method(:read)).sort
+        yield(items)
       end
       
       def keys

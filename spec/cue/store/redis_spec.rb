@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'cue/item'
 require 'cue/store/redis'
 
-describe Cue::Store::File do
+describe Cue::Store::Redis do
   let(:subject) do
     Cue::Store::Redis.namespace = 'minitest:cue'
     Cue::Store::Redis.new
@@ -28,7 +28,7 @@ describe Cue::Store::File do
       item.save(subject)
     end
     
-    subject.keys.must_equal(items.map(&:hash))
+    subject.keys.sort.must_equal(items.map(&:hash).sort)
     subject.delete(items.first.hash)
     subject.keys.must_equal([items.last.hash])
   end

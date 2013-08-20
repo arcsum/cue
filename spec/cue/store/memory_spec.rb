@@ -26,7 +26,7 @@ describe Cue::Store::Memory do
       item.save(subject)
     end
     
-    subject.keys.must_equal(items.map(&:hash))
+    subject.keys.sort.must_equal(items.map(&:hash).sort)
     
     subject.delete(items.last.hash)
     subject.keys.must_equal([items.first.hash])

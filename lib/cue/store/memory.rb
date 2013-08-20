@@ -1,12 +1,19 @@
 module Cue
   module Store
     class Memory
+      include Enumerable
+      
       def clear
         @store = {}
       end
       
       def delete(key)
         store.delete(key)
+      end
+      
+      def each
+        items = keys.map(&method(:read)).sort
+        yield(items)
       end
       
       def keys

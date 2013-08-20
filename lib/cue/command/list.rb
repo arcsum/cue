@@ -5,7 +5,7 @@ module Cue
   module Command
     class List < Base
       def execute
-        Cue.items_for_store(options.store).each { |item| puts item }
+        options.store.each(&method(:puts))
       end
     end
   end
