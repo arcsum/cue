@@ -1,4 +1,5 @@
-require 'cue/store/file'
+require 'cue/store/redis'
+require 'json'
 require 'ostruct'
 require 'optparse'
 
@@ -9,10 +10,11 @@ module Cue
       
       def initialize(args)
         @options = OpenStruct.new.tap do |opts|
-          opts.store = Cue::Store::File.new
+          opts.store = Cue::Store::Redis.new
         end
         
         @args = parser.parse(args)
+        configure_store
         check_num_arguments
       end
       
@@ -63,6 +65,33 @@ module Cue
         else
           parser.abort('Invalid number of arguments.') if @args.size != nargs
         end
+      end
+      
+      def config_path
+        File.join(ENV['HOME'], '.cue', 'config.json')
+      end
+      
+      def configure_redis
+        get_config(:redis) do |config|
+          Cue::Store::Redis.configure do |rconfig|
+            opts = config.select { |k,_| [:host, :port, :password].include?(k) }
+            rconfig.redis = Redis.new(opts)
+          end
+        end
+      end
+      
+      def configure_store
+        case options.store
+        when Cue::Store::Redis
+          configure_redis
+        end
+      end
+      
+      def get_config(key=nil, &block)
+        return unless File.exists?(config_path)
+        
+        json = JSON.parse(File.read(config_path), symbolize_names: true)
+        key.nil? ? yield(json) : yield(json[key])
       end
     end
   end
